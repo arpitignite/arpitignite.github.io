@@ -57,7 +57,7 @@ function handleMotionEvent(e)
   accX = (accX + e.accelerationIncludingGravity.x) / 2;
   accY = (accY + e.accelerationIncludingGravity.y) / 2;
   accZ = (accZ + e.accelerationIncludingGravity.z) / 2;
-  passToPHP2(accX, accY, accZ);
+  // passToPHP2(accX, accY, accZ);
   }
   else if (  (readingStarted == 0) && (readingCompleted == 0) &&
         (((accX - e.accelerationIncludingGravity.x) > 0.1) || ((accX - e.accelerationIncludingGravity.x) < -0.1) ||
@@ -105,7 +105,7 @@ function handleMotionEvent(e)
   accX = (accX + e.accelerationIncludingGravity.x) / 2;
   accY = (accY + e.accelerationIncludingGravity.y) / 2;
   accZ = (accZ + e.accelerationIncludingGravity.z) / 2;
-  passToPHP(accX, accY, accZ);
+  // passToPHP(accX, accY, accZ);
   readingCompleted = 1;
   }
   else if (  (readingStarted == 1) && (readingCompleted == 0) &&
