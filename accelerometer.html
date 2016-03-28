@@ -105,7 +105,7 @@ function handleMotionEvent(e)
   accX = (accX + e.accelerationIncludingGravity.x) / 2;
   accY = (accY + e.accelerationIncludingGravity.y) / 2;
   accZ = (accZ + e.accelerationIncludingGravity.z) / 2;
-   passToPHP(accX, accY, accZ);
+  passToPHP(accX, accY, accZ);
   readingCompleted = 1;
   }
   else if (  (readingStarted == 1) && (readingCompleted == 0) &&
