@@ -125,6 +125,7 @@ function handleMotionEvent(e)
   document.getElementById("accelerationX").innerHTML = accX;
   document.getElementById("accelerationY").innerHTML = accY;
   document.getElementById("accelerationZ").innerHTML = accZ;
+  window.removeEventListener('devicemotion', handleMotionEvent, false);
 }
  
 function passToPHP(x, y, z)    // referred to in point #3 below
