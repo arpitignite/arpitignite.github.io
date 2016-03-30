@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Accelerometer Javascript Test</title>
+<meta name="viewport" content="width=device-width,user-scalable=yes" />
+<style>
+body {
+	font-family: helvetica, arial, sans serif;
+}
+
+</style>
+</head>
+
+<body>
+<button id="demo" onclick="myFunction()">Click to measure.</button>
+<div id="content">
+    <h1>Accelerometer Javascript Test</h1>
+<ul>
+	<li>acceleration x: <span id="accelerationX"></span></li>
+	<li>acceleration y: <span id="accelerationY"></span></li>
+	<li>acceleration z: <span id="accelerationZ"></span></li>
+	<li>rotation alpha: <span id="rotationAlpha"></span>degree</li>
+	<li>rotation beta: <span id="rotationBeta"></span>degree</li>
+	<li>rotation gamma: <span id="rotationGamma"></span>degree</li>
+</ul>
+
+test phase: <span id="test"></span>
+button press: <span id="buttonp"></span>
+
+</div>
+
+
+<script type="text/javascript">
+
+var x = 0, y = 0,
+    vx = 0, vy = 0,
+	ax = 0, ay = 0,
+	accX = 0, accY = 0, accZ = 0,
+	readingStarted = 0, readingCompleted = 0, buttonPress = 0, test = 0,
+	toleranceCounter = 0;
+
+ function throttle (callback, limit) {
+     var wait = false;                  // Initially, we're not waiting
+     return function () {               // We return a throttled function
+         if (!wait) {                   // If we're not waiting
+             callback.apply(arguments);           // Execute users function
+             wait = true;               // Prevent future invocations
+             setTimeout(function () {   // After a period of time
+                 wait = false;          // And allow future invocations
+             }, limit);
+         }
+     }
+ }
+
+function myFunction() {
+	if(buttonPress == 0)
+	{
+		readingStarted = 0;
+		readingCompleted = 0;
+		toleranceCounter = 0;
+		test = 0;
+		window.addEventListener('devicemotion', throttle(handleMotionEvent, 200), false);
+	}
+	if  ((buttonPress < 6)  && ((readingStarted == 0) || (readingCompleted ==1)))
+	{
+		readingStarted = 0;
+		readingCompleted = 0;
+		toleranceCounter = 0;
+		buttonPress = buttonPress + 1;
+	}
+	document.getElementById("buttonp").innerHTML = buttonPress;
+	document.getElementById("test").innerHTML = test;
+}
+
+function handleMotionEvent(e)
+{
+		test = test + 1;
+		if (readingCompleted == 1)
+		{
+			accX = (accX + e.accelerationIncludingGravity.x) / 2;
+			accY = (accY + e.accelerationIncludingGravity.y) / 2;
+			accZ = (accZ + e.accelerationIncludingGravity.z) / 2;
+			passToPHP2(accX, accY, accZ);
+		}
+		else if (  (readingStarted == 0) && (readingCompleted == 0) &&
+		       (((accX - e.accelerationIncludingGravity.x) > 0.1) || ((accX - e.accelerationIncludingGravity.x) < -0.1) ||
+		       ((e.accelerationIncludingGravity.x - accX) > 0.1) || ((e.accelerationIncludingGravity.x - accX) < -0.1) ||
+		      ((accY - e.accelerationIncludingGravity.y) > 0.1) || ((accY - e.accelerationIncludingGravity.y) < -0.1) ||
+		       ((e.accelerationIncludingGravity.y - accY) > 0.1) || ((e.accelerationIncludingGravity.y - accY) < -0.1) ||
+		      ((accZ - e.accelerationIncludingGravity.z) > 0.1) || ((accZ - e.accelerationIncludingGravity.z) < -0.1) ||
+		       ((e.accelerationIncludingGravity.z - accZ) > 0.1) || ((e.accelerationIncludingGravity.z - accZ) < -0.1))
+		  )
+		{
+			accX =  e.accelerationIncludingGravity.x;
+			accY =  e.accelerationIncludingGravity.y;
+			accZ =  e.accelerationIncludingGravity.z;
+			readingStarted = 1;
+
+			if ( e.rotationRate ) {
+				document.getElementById("rotationAlpha").innerHTML = e.rotationRate.alpha;
+				document.getElementById("rotationBeta").innerHTML = e.rotationRate.beta;
+				document.getElementById("rotationGamma").innerHTML = e.rotationRate.gamma;
+			}		
+		}
+		else if (  (readingStarted == 1) && (readingCompleted == 0) && (toleranceCounter < 5) &&
+		       !(((accX - e.accelerationIncludingGravity.x) > 0.1) || ((accX - e.accelerationIncludingGravity.x) < -0.1) ||
+		       ((e.accelerationIncludingGravity.x - accX) > 0.1) || ((e.accelerationIncludingGravity.x - accX) < -0.1) ||
+		      ((accY - e.accelerationIncludingGravity.y) > 0.1) || ((accY - e.accelerationIncludingGravity.y) < -0.1) ||
+		       ((e.accelerationIncludingGravity.y - accY) > 0.1) || ((e.accelerationIncludingGravity.y - accY) < -0.1) ||
+		      ((accZ - e.accelerationIncludingGravity.z) > 0.1) || ((accZ - e.accelerationIncludingGravity.z) < -0.1) ||
+		       ((e.accelerationIncludingGravity.z - accZ) > 0.1) || ((e.accelerationIncludingGravity.z - accZ) < -0.1))
+		  )
+		{
+			accX = (accX + e.accelerationIncludingGravity.x) / 2;
+			accY = (accY + e.accelerationIncludingGravity.y) / 2;
+			accZ = (accZ + e.accelerationIncludingGravity.z) / 2;
+			toleranceCounter = toleranceCounter + 1;
+		}
+		else if (  (readingStarted == 1) && (readingCompleted == 0) && (toleranceCounter == 5) &&
+		       !(((accX - e.accelerationIncludingGravity.x) > 0.1) || ((accX - e.accelerationIncludingGravity.x) < -0.1) ||
+		       ((e.accelerationIncludingGravity.x - accX) > 0.1) || ((e.accelerationIncludingGravity.x - accX) < -0.1) ||
+		      ((accY - e.accelerationIncludingGravity.y) > 0.1) || ((accY - e.accelerationIncludingGravity.y) < -0.1) ||
+		       ((e.accelerationIncludingGravity.y - accY) > 0.1) || ((e.accelerationIncludingGravity.y - accY) < -0.1) ||
+		      ((accZ - e.accelerationIncludingGravity.z) > 0.1) || ((accZ - e.accelerationIncludingGravity.z) < -0.1) ||
+		       ((e.accelerationIncludingGravity.z - accZ) > 0.1) || ((e.accelerationIncludingGravity.z - accZ) < -0.1))
+		  )
+		{
+			accX = (accX + e.accelerationIncludingGravity.x) / 2;
+			accY = (accY + e.accelerationIncludingGravity.y) / 2;
+			accZ = (accZ + e.accelerationIncludingGravity.z) / 2;
+			passToPHP(accX, accY, accZ);
+			readingCompleted = 1;
+		}
+		else if (  (readingStarted == 1) && (readingCompleted == 0) &&
+		       (((accX - e.accelerationIncludingGravity.x) > 0.1) || ((accX - e.accelerationIncludingGravity.x) < -0.1) ||
+		       ((e.accelerationIncludingGravity.x - accX) > 0.1) || ((e.accelerationIncludingGravity.x - accX) < -0.1) ||
+		      ((accY - e.accelerationIncludingGravity.y) > 0.1) || ((accY - e.accelerationIncludingGravity.y) < -0.1) ||
+		       ((e.accelerationIncludingGravity.y - accY) > 0.1) || ((e.accelerationIncludingGravity.y - accY) < -0.1) ||
+		      ((accZ - e.accelerationIncludingGravity.z) > 0.1) || ((accZ - e.accelerationIncludingGravity.z) < -0.1) ||
+		       ((e.accelerationIncludingGravity.z - accZ) > 0.1) || ((e.accelerationIncludingGravity.z - accZ) < -0.1))
+		  )
+		{
+			accX = (accX + e.accelerationIncludingGravity.x) / 2;
+			accY = (accY + e.accelerationIncludingGravity.y) / 2;
+			accZ = (accZ + e.accelerationIncludingGravity.z) / 2;
+			toleranceCounter = 0;
+		}
+ 		document.getElementById("accelerationX").innerHTML = accX;
+		document.getElementById("accelerationY").innerHTML = accY;
+		document.getElementById("accelerationZ").innerHTML = accZ;
+}
+
+function passToPHP(x, y, z)
+{
+  var xhttp = new XMLHttpRequest();
+  xhttp.open("POST", "http://localhost/acc.php?accX=" + x + "&accY=" + y + "&accZ=" + z, true);
+  xhttp.send();
+}
+
+function passToPHP2(x, y, z)
+{
+  var xhttp = new XMLHttpRequest();
+  xhttp.open("POST", "http://localhost/acc2.php?accX=" + x + "&accY=" + y + "&accZ=" + z, true);
+  xhttp.send();
+}
+
+</script>
+
+</body>
+</html>
